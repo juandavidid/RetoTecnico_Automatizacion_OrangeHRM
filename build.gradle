@@ -1,0 +1,132 @@
+// Seccion para configurar el script de construccion de Grafle
+buildscript {
+    // Define la version de Serenity que se utilizara en el proyecto
+    ext.serenityCoreVersion = '3.3.0'
+    // Repositorio donde buscar las dependencias
+    repositories {
+        mavenCentral()
+    }
+    // Dependencias necesarias para el script de construccion
+    dependencies {
+        // Agrega el plugin de Gradle de Serenity BDD
+        classpath("net.serenity-bdd:serenity-gradle-plugin:$serenityCoreVersion")
+        // Agrega el plugin para reportes de una sola página de Serenity
+        classpath "net.serenity-bdd:serenity-single-page-report:$serenityCoreVersion"
+    }
+}
+// SECCION PARA DEFINIR PLUGINS QUE SE USARAN  EN EL PROYECTO
+plugins {
+    // Aplica el plugin de Serenity Gradle
+    id "net.serenity-bdd.serenity-gradle-plugin" version "${serenityCoreVersion}"
+    // Aplica el plugin de Java
+    id 'java'
+    // Aplica el plugin de Eclipse para la integración con ese IDE
+    id 'eclipse'
+    // Aplica el plugin de IntelliJ IDEA para la integración con ese IDE
+    id 'idea'
+}
+
+//define las tareas por defecto que se ejecutaran al ejecutar el comando gradle
+defaultTasks 'clean','test','aggregate'
+//aplica el plugin de serenity BDD para el proyecto
+apply plugin: 'net.serenity-bdd.serenity-gradle-plugin'
+
+// Define el grupo y version  del proyecto
+group 'co.com.screenplay.project'
+version '1.0-SNAPSHOT'
+
+// Configura la codificacion de los archivos fuente( Alguno escenarios, se escribiran en lenguaje Natural ; ,  )
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+//Define la version de Java que se usuara para compilar
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+// Seccion para especificar repositorios de dependencias
+repositories {
+    // Usar Maven central para las dependencias
+    mavenCentral()
+}
+
+
+// SECCION PARA DEFINIR VARIABLES DE VERSIONES DE DEPENDENCIAS
+ext {
+    // Versión de SLF4J (una API para la gestión de logs)
+    slf4jVersion = '1.7.7'
+    // Versión de Serenity Core
+    serenityCoreVersion = '3.3.4'
+    // Versión de Serenity para Cucumber
+    serenityCucumberVersion = '3.3.4'
+    // Versión de JUnit
+    junitVersion = '5.8.2'
+    // Versión de AssertJ (para aserciones en pruebas)
+    assertJVersion = '3.22.0'
+    // Versión de Logback (para logging)
+    logbackVersion = '1.2.10'
+    // Versión de Lombok (para reducir boilerplate en código)
+    lombokVersion = '1.18.22'
+    // Versión de Log4j (para logging)
+    log4jVersion = '2.17.1'
+}
+
+// SECCION PARA DEFINIR LAS DEPENDENCIAS DEL PROYECTO
+dependencies {
+    // Dependencia principal para el núcleo de Serenity, excluyendo Groovy
+    testImplementation ("net.serenity-bdd:serenity-core:${serenityCoreVersion}"){
+        exclude group: 'org.apache.groovy', module: 'groovy'
+    }
+    // Implementación de Serenity para aseguramientos
+    implementation "net.serenity-bdd:serenity-ensure:${serenityCoreVersion}"
+    // Implementación de Serenity para JUnit5
+    implementation "net.serenity-bdd:serenity-junit5:${serenityCoreVersion}"
+    // Implementación de Serenity para Cucumber
+    implementation "net.serenity-bdd:serenity-cucumber:${serenityCucumberVersion}"
+    // Implementación de Serenity para Screenplay
+    implementation "net.serenity-bdd:serenity-screenplay:${serenityCoreVersion}"
+    // Implementación de Serenity para Screenplay con WebDriver
+    implementation "net.serenity-bdd:serenity-screenplay-webdriver:${serenityCoreVersion}"
+    // Implementación de Serenity para Screenplay con REST
+    implementation "net.serenity-bdd:serenity-screenplay-rest:${serenityCoreVersion}"
+
+    // Implementación de JUnit5 API
+    implementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    // Implementación de motor JUnit5
+    implementation "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    // Implementación de AssertJ para aserciones
+    implementation "org.assertj:assertj-core:${assertJVersion}"
+    // Implementación de Logback para logging
+    implementation "ch.qos.logback:logback-classic:${logbackVersion}"
+
+    // Lombok para reducir el código repetitivo, solo en tiempo de compilación
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+
+    // Implementación de Java Faker para generar datos de prueba ficticios
+    implementation group: 'com.github.javafaker', name: 'javafaker', version: '1.0.2'
+
+}
+
+// Configura el bloque de pruebas
+test {
+    // Utiliza la plataforma de pruebas de JUnit
+    useJUnitPlatform()
+    // Muestra los flujos estándar durante la ejecución de pruebas
+    testLogging.showStandardStreams = true
+    // Pasa todas las propiedades del sistema al entorno de prueba
+    systemProperties System.getProperties()
+}
+
+//Configuracion especifica para serenity
+serenity {
+    testRoot = "co.com.screenplay.project.runners"        // Ruta donde van todos los Runner, con el tiempo se debe cambiar si se empieza un nuevo proyecto
+    requirementsBaseDir = "src/test/resources/features"
+    reports = ["single-page-html"]                      // Formato en que se presenta los reportes
+}
+
+// Configuracion para continuar en caso de fallos
+gradle.startParameter.continueOnFailure = true
+// define que despues de la ejecucion de las pruebas, se ejecuta la tarea de agregacion de reportes
+test.finalizedBy(aggregate)
