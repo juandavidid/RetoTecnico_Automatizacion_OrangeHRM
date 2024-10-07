@@ -1,17 +1,17 @@
 
 
-Feature: Login al sistema y validacion del panel principal
+Feature: Login al sistema y validacion Gestion candidatos
 
-  Yo como Alejandro,
-  Quiero realizar una prueba de abrir una página
-  Para comprobar la robustez y control de errores de la aplicación o página web.
+  Yo como administrador
+  Quiero poder agregar y gestionar los candidatos
+  Para tener un registro adecuado de las postulaciones.  .
 
   Background:
-    Given "Alejandro" abre el navegador Microsoft Edge
+    Given "Administrador" abre el navegador Microsoft Edge
 
 
   @successful
-  Scenario: Abrir con el navegador Chrome la página web
+  Scenario: Agregar un Candidato
     When    el usuario ingresa el Username y el Password
     Then visualizara el panel principal de la aplicacion
     When el usuario navega a la opción "Recruitment"
