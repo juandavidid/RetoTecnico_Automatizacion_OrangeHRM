@@ -21,8 +21,8 @@ public class Hook {
         OnStage.setTheStage(new OnlineCast());
     }
 
-    @Given("{string} abre el sitio web de pruebas")
-    public void openTheTestWebsite(String actor) {
+    @Given("{string} abre el navegador Microsoft Edge")
+    public void openTheMicrosoftEdgeBrowser(String actor) {
 
         OnStage.theActorCalled(actor).attemptsTo(
                 OpenWeb.browserURL()
@@ -30,16 +30,12 @@ public class Hook {
 
         waiting(TIME_SHORT);     // Pausar la prueba mientras carga nuestra pagina web
 
-        // Condicio para validar el Titulo de la Pagina web
+        // Condicion para validar el Titulo de la Pagina web
         theActorInTheSpotlight().should(
-
                 GivenWhenThen.seeThat(
-
                         TheWebPage.title(),   // Pregunta al sistema o obtiene el titulo de  la pagina
-
                         Matchers.containsString(TITLE)  // aqui compara titulo real con el titulo esperado o guardado
                 )
-
         );
 
 
