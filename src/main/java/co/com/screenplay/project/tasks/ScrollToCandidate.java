@@ -12,6 +12,12 @@ public class ScrollToCandidate implements Task {
         actor.attemptsTo(
                 Scroll.to(CANDIDATE_ROW_LOCATOR)
         );
+
+        try {
+            Thread.sleep(8000); // Pausa de 10 segundos
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public static ScrollToCandidate toJuanDavidRow() {
